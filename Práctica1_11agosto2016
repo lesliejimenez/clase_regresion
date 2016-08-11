@@ -1,0 +1,27 @@
+##### Clase 1   11 Agosto 2016  "Base de datos" #####
+##### Base de datos de 4 variables (nombre, edad, sexo, tipo de educación) #####
+
+nombre <- c ("Sergio", "Alan", "Betzabeth", "Judith", "Rodrigo", "Eric", "Diego", "Angel" )
+edad <- c(36,20,23,20,21,21,22,21)
+sexo <- c("Hombre","Hombre","Mujer","Mujer","Hombre","Hombre","Hombre","Hombre")
+tedu <- c("Pública","Pública","Pública","Pública","Privada","Pública","Pública","Pública")
+
+##### Base en forma de matriz #####
+base1 <- matrix(c(edad,nombre,sexo,tedu))
+
+##### Fn. "data.frame" para crear una base de datos #####
+base1.1 <- data.frame(edad,nombre,sexo,tedu)
+
+##### Fn. "table" para conocer la frecuencia de las variables #####
+table(base1.1$edad)
+table(base1.1$sexo)
+
+##### Fn. "attach" llamar la base de datos deseada para las siguientes funciones #####
+attach(base1.1)
+table(edad)
+
+##### Fn. "detach" para dejar de usar la base de datos
+detach(base1.1)
+
+##### Fn. "summary" para resumen de la base de datos
+summary(base1.1$edad)

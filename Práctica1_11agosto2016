@@ -25,3 +25,15 @@ detach(base1.1)
 
 ##### Fn. "summary" para resumen de la base de datos
 summary(base1.1$edad)
+
+
+
+##### Importar base de datos #####
+##### Se necesita el paquete "foreign"
+install.packages("foreign")
+require(foreign)
+
+##### Fn. "read.dbf" utilizar una base de datos externa #####
+sociodem <- read.dbf("C://Users//SALA-C//Desktop//Regresión//SDEMT215.dbf")
+table(sociodem$SEX)
+

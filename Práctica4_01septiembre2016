@@ -1,0 +1,29 @@
+##### Hipótesis: Mayor ingreso de la familia, mayor estatura #####
+
+estaturas <- c(1.2,1.23,1.19,1.32,1.28,1.22,1.17,1.29,1.33,1.15)
+niv_eco <- c(110,130,108,167,156,115,104,138,170,107)
+
+      #### 1.Crear gráfico ####
+      plot (niv_eco,estaturas,pch=12,xlab="Ingreso económico",ylab="Estatura",main="Gráfico de dispersión",col="purple")
+ 
+      #### 2.Ver correlaciones ####
+          ### Fn. "cor()" utilizado para calcular el coeficiente de correlación ###
+            ## Argumentos cor(variable dependiente, variable independiente,método de correlación ##
+      cor(estaturas,niv_eco,method = "pearson")
+      # El coeficiente de correlación es 0.9567263, lo que quiere decir que tiene una correlación muy alta y positiva #
+     
+      #### 3.Verificar la relación ####
+      cor.test(estaturas,niv_eco,method="pearson")
+      # Como el valor de p-value es menor a 0.05, entonces rechazamos nuestra hipótesis nula, con lo cual aceptamos que si hay una relación entre las variables #
+
+      #### 4.Aplicación del modelo #####
+      modelo1 <- lm(estaturas~niv_eco)
+      summary(modelo1)
+      # Si contiene *** quiere decir que son fuertemente significativos #
+      # Los residuales nos generan las diferencias entre los valores ajustados y los reales #
+      
+      abline(modelo1) # Para mostrar la recta que mejor se ajusta al modelo #
+      names(modelo1)
+      modelo1$coefficients # Valores de la ecuación Y=beta(o)+beta(1)x
+      
+      estaturas = 0.932369238 + 0.002341998 niv_eco

@@ -1,0 +1,57 @@
+###### 22 septiembre 2016 ######
+install.packages("car")
+estaturas <- c(1.2,1.23,1.19,1.32,1.28,1.22,1.17,1.29,1.33,1.15)
+niv_eco <- c(110,130,108,167,156,115,104,138,170,107)
+mod1<-lm(estaturas~niv_eco)
+base1<-data.frame(niv_eco,estaturas)
+base1$ajuste.mod1<-fitted(mod1) # Valor ajustado
+base1$residuales.mod1<-residuals(mod1) # Residuos del modelo
+base1$rstudent.mod1<-rstudent(mod1) # Residuos studentizados
+
+# Estas variables se utilizan para comprobar los supuestos:
+#   1. Supuesto de normalidad-> que los residuos tengan distribución normal.
+#       Para conocer la normalidad se utiliza la prueba de shapiro para analizar los residuos
+shapiro.test(base1$rstudent.mod1)
+#       Prueba de hipótesis del shapiro test:
+#           H0: La muestra tiene distribución normal 
+#           Ha: La muestra no tiene distribución normal
+#       Tenemos un p-value con valor de 0.8172 no se rechaza la hipótesis nula, por lo tanto
+#       se acepta que hay normalidad 
+#     El resultado gráfico es:
+qqnorm(base1$rstudent.mod1, main="Normal(0,1)")
+#     Se obtiene el gráfico de dispersión connla normal (0,1)
+qqline(base1$rstudent.mod1)
+#     NOTA: Con la obtención del shapiro test es suficiente para comprobar normalidad
+
+#     1.1 Homogeneidad de las variables
+install.packages("lmtest")
+require(lmtest)
+bptest(mod1)
+#         En esta prueba esperamos homogeneidad de las variables
+#           H0: Hay homogeneidad en las varianzas
+#           H1: No hay homogeneidad en las varianzas
+#         En el bptest se obtuvo un p-value de 0.0108 por lo tanto no s rchaza la H0
+#         Para no rechazar H0 necesitamos necesitamos tener un p-value>0.05
+#         Para mod1 se puede decir que hay homogeneidad en las variables
+#   2. Prueba de autocorrelación o independencia
+#     Se usa la prueba Durbin Watson
+#       H0: Hay autocorrelación en los rsiduos
+#       Ha: No hay autocorrelación en los residuos
+dwtest(mod1$alternative="two.sided")
+#     La prueba genera un p-value de 0.9142 por lo que no se rechaza la hipótesis nula
+#     debido a que tomamos un p-value>0.05
+#     Otra forma de evaluar la prueba de Durbin Watson es con el valor 1.5<DW<2.5 
+#     si está dentro del intervalo, se puede decir que no hay autocorrelación en los residuos
+#     De manera gráfica:
+plot(base1$residuales.mod1,pch=100,ylab="Residuales",xlab="in")
+abline(h=cor(base1$estaturas,base1$niv_eco))
+#     En este caso se puede ver que tenemos una gráfica sin patrón, que es lo que estamos esperando 
+#     lo que confrima que hay corrlación
+#     Puede haber un problema de rangos si predecimos sin considerar rangos de nuestra variable
+#     por lo que definimos una nueva base con los límites
+limbase1<-seq(min(base1$niv_eco),max(base1$niv_eco),lenght=10)
+limbase1<-data.frame(limbase1)
+limbasep<-predict.lm(mod1,limbase1,interval="prediction",se.fit=TRUE, data=base1)
+head(limbasep$fit) # Te generan los límites
+#     Para generar los límites:
+matplot(limbase1, limbasep$fit, type="1",xlab="Ingresos",ylab="Estaturas")

@@ -1,0 +1,36 @@
+############ Práctica 23 Septiembre 2016 ############
+
+setwd("C://Users//SALA-C23//Desktop")
+require("foreign")
+sdemt216 <- data.frame(read.dbf("sdemt216.dbf"))
+
+
+colima <- subset(sdemt216,sdemt216$ENT == "06")
+
+colima$ING7C  <- as.numeric(colima$ING7C)
+salario1 <- c(colima$salario)
+
+colima$CS_P13_1 <- as.numeric(colima$CS_P13_1)
+estudios <- c(colima$CS_P13_1)
+
+salario <- subset(colima,colima$ING7C != "06" | colima$ING7C != "07" )
+salario
+
+
+plot (estudios,salario, pch = 17, xlab = "Estudios", 
+      ylab = "Salario", main = "Gráfica de dispersión",col = "red")
+
+cor(salario,estudios, method = "pearson")
+
+#la prueba de hipótesis para esta función es H0 = r = 0
+#es decir que no hay relación, 
+#HA r != 0 si relación
+
+cor.test(municipio,estudios,method = "pearson")
+
+#si p-value es menor a .05 rechazamos HO
+# por lo tanto aceptamos la HA con un 95% de confianza
+
+# p-value es igual a 0.04288703265
+# por lo tanto con un nivel de confianza del 95%
+# podemos decir que si hay relación en los datos

@@ -1,0 +1,60 @@
+#####Modelo de regresión múltiple
+capa<-c(4330,5500,5500,4700,5200,5500,4700,5500,5800,5000) #inde(x2)
+calidad<-c(2,3,4,3,4,4,4,5,5,5) #inde(x1)
+precio<-c(190,219,249,249,250,340,289,395,439,525) #dep(y)
+
+plot(capa,precio,pch=11,xlab="capa",ylab="precio", main="Gráfica de dispersión",color="green")
+
+cor(precio,calidad, method="pearson")
+
+cor.test(precio,calidad,method="pearson")
+
+### Seleccionar al mejor conjunto de variables independientes 
+
+###   Tenemos 2 variables independientes (calidad y precio) por lo que se recomienda comparara 3 modelos
+###   Aplicar el principio de parsimonia, cnocer las variables independientes innecesarias
+###   Evitar multicolienlaliedad, es decir que se tienen varias variables intentando explicar el modelo
+
+###   Modelos: 
+###     1. Precio~Cantidad
+###     2. Precio~Calidad
+###     3. Precio~Calidad+Cantidad
+
+###   ¿Cómo seleccionar el mejor modelo?
+
+###   Criteio de información de Arkaike (AIC)
+###   El problema de utilizar r^2 para comparar modelos es que al introducir nuevas variables,
+###   esta medida siempre crece.
+###   Utilizamos el (AIC), una medida de ajuste que penaliza el modelo por tener más variables.
+###   Definido por:
+###     AIC= (n)(log(scr/n)+2k)
+###       scr=suma de los cuadrados residuales
+###       n=número de casos del modelo
+###       k=número de variables indepndientes
+###   El problema es que el único criterio del AIC es que si el AIC es mayor, el modelo es peor,
+###   en cambio si el AIC es menor, es mejor, buscamos un AIC más pequeño
+###   El método más recomendad es el STEP, para R se utiliza la función step()
+###   Dentro de modelo step by step, hay 3 modalidades:
+###     - Forward: parte del coeficiente B0 y de ahí va probando variables independientes para ver 
+###               cual es el que más aplica.
+###     - Backward: R empieza con todas las variables independientes y estudia el AIC
+###     - Both: empieza como forwar, la diferencia es que realiza test para conocer la variable
+###           independiente menos utilizada.
+###   El más recomendable es backwardporque tiene un efecto represor que permite probar cuando una 
+###   variabe tiene influencia solo si otra variable se mantiene constante.
+
+mochila<-data.frame(precio,capa,calidad)
+cor(mochila,use="everything",method = "pearson")
+mod1<-lm(precio~capa+calidad,data=mochila)
+summary(mod1)
+
+step(mod1,direction = "backward")
+##    Se analizó 2 modelos
+##      1. Start: AIC=83.9 precio~capa+calidad
+##      2. Step: AIC=83.51 precio~calidad
+
+step(mod1,direction = "both")
+
+step(mod1,direction = "forward")
+# Este modelo solo muestra el modelo completo porque inicia haciendo pruebas con el modelo nulo 
+# y solo deja el modelo completo porque es el mayor AIC que muestra

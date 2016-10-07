@@ -1,0 +1,60 @@
+##### Ejercicio clase #####
+
+y<-c(25.5,31.2,25.9,38.4,18.4,26.7,26.4,25.9,32,25.2,39.7,35.7,26.5)
+x1<-c(1.74,6.32,6.2,10.52,1.19,1.22,4.10,6.32,4.08,4.15,10.15,1.72,1.70)
+x2<-c(5.30,5.42,8.41,4.63,11.60,5.85,6.62,8.72,4.42,7.60,4.83,3.12,5.3)
+x3<-c(10.8,9.4,7.2,8.5,9.4,9.9,8,9.1,8.7,9.2,9.4,7.6,8.2)
+
+## 0) analizar graficos de dispersion y pruebas de correlacion
+
+z <- data.frame(y, x1, x2, x3)
+
+plot(z, main = "Gráfica de dispersión", pch=17, col="red")
+
+cor(z, use = "everything", method = "pearson")
+cor.test(z, use = "everything", method = "pearson")
+
+## 1) plantear la ecuacion estimada origina, es decir con todas las variables
+
+modelo <- lm(y ~ x1 + x2 + x3)
+summary(modelo)
+# y = 39.1767 + 1.0166x1 - 1.8608x2 - 0.3461x3
+
+## 2) analizar la anova, r cuadrada, estadistico F (mediante p.h.)
+
+anova(modelo)
+
+# Podemos observar que en la variable X3 F value no es mayor a 1 y que  Pr (F) no es menor a .05
+# por lo tanto esta variable no es significativa para el modelo
+
+# 3) comparen modelos ccon backward y analicen el modelo qyue genere la funcion step
+
+step(modelo, direction = "backward")
+
+# El mejor modelo es el de y ~ x1 + x2, ya que su AIC es el menor de todos (AIC = 20.6)
+
+modelonuevo <- lm(y ~ x1 + x2)
+
+summary(modelonuevo)
+
+anova(modelonuevo)
+
+#De acuerdo a nuestro nuevo modelo, podemos confirmar que las variables x1 y x2 son significativas.
+
+# 4) Realizar las pruebas 
+
+z$ajustado <- fitted(modelonuevo)
+z$residuals <- residuals(modelonuevo)
+z$rstudent <- rstudent(modelonuevo)
+
+# Ahora probamos los supuestos de normalidad
+install.packages("lmtest")
+require (lmtest)
+
+ks.test(modelonuevo$rstudent, "pnorm")
+
+bptest(modelonuevo, studentsize = FALSE, data = z)
+
+dwtest(modelonuevo, studentsize = FALSE, data = z)
+
+

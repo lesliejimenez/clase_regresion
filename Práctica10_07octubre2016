@@ -1,0 +1,33 @@
+####################################
+
+
+mod1 <- lm(precio ~ calidad, data = mochila)
+summary(mod1)
+
+# aplicar los supuestos para ver si temos un buen modelo
+
+mochila$ajustado <- fitted(mod1)
+mochila$residuals <- residuals(mod1)
+mochila$rstudent <- rstudent(mod1)
+
+# Ahora probamos los supuestos de normalidad
+install.packages("lmtest")
+require (lmtest)
+ks.test(mochila$rstudent, "pnorm")
+
+#Histograma
+hist(mochila$rstudent, xlab= "residuales", main = "Histograma residuales")
+
+## El p-value para el contraste de normalidad es mayor que .05 (p=.9719) y además
+# el histograma se parece a una distribucuión normal
+# (curva en forma campana) entonces no hay problemas de normalidad
+# Homogeneidad de varianzas
+bptest(mod1, studentsize = FALSE, data = mochila)
+
+# Significancia p= .4154 mayor de .05, por lo que podemos decir
+# que la varianza es constante a lo largo de la muestra
+
+dwtest(mod1, alternative = "two.sided", data = mochila)
+
+# aceptamos la hipótesis nula que no existe correlación entre los residuos
+# con un p-value superior a .05 (p-value = 0.2976)

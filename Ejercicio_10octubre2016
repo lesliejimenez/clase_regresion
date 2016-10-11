@@ -1,0 +1,27 @@
+##### Considere el modelo    Yt = b0 + b1x1 + b2x2 + Ut
+##### Con los siguientes datos ajuste el modelo
+#####           Yt    x1    x2
+#####           10    1     0
+#####           25    3     -1
+#####           32    4     0
+#####           43    5     1
+#####           58    7     -1
+#####           62    8     0
+#####           67    10    -1
+#####           71    10    2
+##### Con estos datos estimar los valores b0, b1, b2
+##### Para estimar estos parámetros hacerlo a través de álgebra matricial
+##### con la siguiente fórmula vista en clase b = (X'X)^-1 Y X'
+
+
+x <- matrix(c(1,1,0,1,3,-1,1,4,0,1,5,1,1,7,-1,1,8,0,1,10,-1,1,10,2),ncol=3,byrow = T)
+View(x)
+
+col1<-c(10,25,32,43,58,62,67,71)
+y <- t(t(col1))
+View(y)
+
+tr = t(x)
+mul = tr%*%x
+inv = solve(mul)
+mult = inv*y*tr

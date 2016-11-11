@@ -1,0 +1,133 @@
+### Personas Ocupadas y No Ocupadas dado que estudiaron 
+### el Bachillerato en una escuela pública
+
+
+install.packages("foreign")
+install.packages("questionr")
+require (questionr)
+require(foreign)
+
+setwd("C://Users//Sala-C24//Desktop")
+ENILEMS <- read.dbf("cbasico.dbf")
+
+
+#ls(ENILEMS)
+#ls(Publica)
+
+ENILEMS$P7 <- as.numeric(as.character(ENILEMS$P7))
+PUBLICA <- subset(ENILEMS, ENILEMS$P7 == 1)
+
+#wtd.table(PUBLICA$SEX, weights = PUBLICA$FAC)
+
+PUBLICA$SEX <- ifelse(PUBLICA$SEX == 1, "Hombres", "Mujeres")
+sexo <- data.frame(wtd.table(PUBLICA$SEX, weights = PUBLICA$FAC))
+
+wtd.table(ENILEMS$P35, weights = ENILEMS$FAC)
+
+# El número 1: Si el seleccionado ENILEMS no es quien dio su información en la ENOE 
+
+
+# El número 2: Si el seleccionado ENILEMS dio su información en la ENOE y desde que
+#              salió del bachillerato ha tenido más
+#              de un trabajo y se definió OCUPADO en el COE
+
+# El número 3: Si el seleccionado ENILEMS dio su información en la ENOE y se definió
+#              NO OCUPADO en el COE
+
+# El número 4: Si el seleccionado de la ENILEMS dio su información en la ENOE y desde
+#              que salió del bachillerato sólo ha tenido
+#              un trabajo y se definió OCUPADO en el COE
+
+ENILEMS$P35 <- as.numeric(as.character(ENILEMS$P35))
+Ocu <- subset(ENILEMS, (ENILEMS$P35 == 2) | (ENILEMS$P35 == 3) | (ENILEMS$P35 == 4) )
+Ocu$P35 <- ifelse(Ocu$P35 == 2 | Ocu$P35 == 4 , "Ocupados", "No Ocupados")
+
+Ocupación <- data.frame(wtd.table(Ocu$P35, weights = Ocu$FAC))
+
+### Integrantes:
+### Hernández Flores Laura Gabriela
+### Jiménez Calderón Leslie
+
+###################################################
+
+sdemt312 <- read.dbf("sdemt312.dbf")
+coe1t312 <- read.dbf("coe1t312.dbf")
+
+
+
+
+folio <- paste(sdemt312$CD_A, sdemt312$ENT, sdemt312$CON, sdemt312$V_SEL, 
+               sdemt312$N_HOG, sdemt312$H_MUD, sdemt312$N_REN)
+
+x <- data.frame(sdemt312, folio)
+
+
+folio <- paste(coe1t312$CD_A, coe1t312$ENT, coe1t312$CON, coe1t312$V_SEL, 
+               coe1t312$N_HOG, coe1t312$H_MUD, coe1t312$N_REN)
+
+x1 <- data.frame(coe1t312, folio)
+
+
+total <- merge(x, x1, by = "folio",all.x = TRUE)
+
+
+folio <- paste(ENILEMS$CD_A, ENILEMS$ENT, ENILEMS$CON, ENILEMS$V_SEL, 
+               ENILEMS$N_HOG, ENILEMS$H_MUD, ENILEMS$N_REN)
+
+x2 <- data.frame(ENILEMS, folio)
+
+
+total1 <- merge(total, x2, by = "folio", all.x = TRUE)
+
+
+
+wtd.table(total1$EDA.x, weights = total1$FAC.x)
+
+sum(wtd.table(total1$EDA.x, weights = total1$FAC.x))
+
+table(total1$SEX, total1$P1)
+
+#### Sexo
+
+total1$SEX.x <- as.numeric(as.character(total1$SEX.x))
+total1$SEX.x <- ifelse(total1$SEX.x == 1, "Hombres", "Mujeres")
+sexo <- data.frame(wtd.table(total1$SEX.x, weights = total1$FAC.x))
+
+#### Grupos de edad
+
+total1$EDA.x <- as.numeric(as.character(total1$EDA.x))
+total1$EDA.x <- ifelse(total1$EDA.x >= 0 & total1$EDA.x <= 9, "0 a 9",
+                ifelse(total1$EDA.x >= 10 & total1$EDA.x <= 19, "10 a 19",
+                ifelse(total1$EDA.x >= 20 & total1$EDA.x <= 29, "20 a 29",
+                ifelse(total1$EDA.x >= 30 & total1$EDA.x <= 39, "30 a 39",
+                ifelse(total1$EDA.x >= 40 & total1$EDA.x <= 49, "40 a 49",
+                ifelse(total1$EDA.x >= 50 & total1$EDA.x <= 59, "50 a 59",
+                ifelse(total1$EDA.x >= 60 & total1$EDA.x <= 69, "60 a 69",
+                ifelse(total1$EDA.x >= 70 & total1$EDA.x <= 79, "70 a 79",
+                "80 y más"))))))))
+
+GrupoEdad <- data.frame(wtd.table(total1$EDA.x, weights = total1$FAC.x))
+
+### Nivel Educativo
+
+total1$CS_P13_1 <- as.numeric(as.character(total1$CS_P13_1))
+total1$CS_P13_1 <- ifelse(total1$CS_P13_1 == 0, "Sin institución",
+                   ifelse(total1$CS_P13_1 == 1, "Preescolar",
+                   ifelse(total1$CS_P13_1 == 2, "Primaria",
+                   ifelse(total1$CS_P13_1 == 3, "Secundaria",
+                   ifelse(total1$CS_P13_1 >= 4 & total1$CS_P13_1 <= 6, "Preparatoria o técnica",
+                   ifelse(total1$CS_P13_1 >= 7 & total1$CS_P13_1 <= 9, "Universidad o más",        
+                   "No sabe"))))))
+
+NivelEducativo <- data.frame(wtd.table(total1$CS_P13_1, weights = total1$FAC.x))
+
+
+### Condición de actividad
+
+total1$C_INAC5C <- as.numeric(as.character(total1$C_INAC5C))
+total1$C_INAC5C <- ifelse(total1$C_INAC5C == 1, "Estudiantes",
+                   ifelse(total1$C_INAC5C == 2, "Quehaceres domésticos",
+                   ifelse(total1$C_INAC5C == 3, "Pensionados y jubilados",
+                  "Otra condición")))
+
+CondicionActual <- data.frame(wtd.table(total1$C_INAC5C, weights = total1$FAC.x))

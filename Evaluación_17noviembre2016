@@ -1,0 +1,50 @@
+install.packages("foreign")
+require(foreign)
+
+rural <- data.frame(read.spss("C://Users//SALA-C32//Desktop//solorural.sav"))
+
+edadtotal<-data.frame(wtd.table(rural$sex, weights = rural$fac_mti))
+# Niños  4 061 217
+# Niñas  3 800 117
+# Total  7 861 334
+
+edadmuestra<-data.frame(wtd.table(rural$sex))
+# Niños   9 302            
+# Niñas   8 798        48.61 %
+# Total  18 100        100 %
+
+ocupados<-subset(rural,rural$clase2==1)
+
+ocu_sex<-data.frame(wtd.table(ocupados$sex,weights = ocupados$fac_mti))
+# Niños  622 492
+# Niñas  204 970
+# Total  827 462
+
+ocupados$eda<-as.numeric(as.character(ocupados$eda))
+
+ocupados$eda<-ifelse(ocupados$eda>=5 & ocupados$eda<=9,"5 a 9",
+                       ifelse(ocupados$eda>=10 & ocupados$eda<=13,"10 a 13",
+                              ifelse(ocupados$eda>=14 & ocupados$eda<=17,"14 a 17", "NA")))
+
+ocu_grupoedad<-data.frame(wtd.table(ocupados$eda, weights = ocupados$fac_mti))
+# 5 a 9    0
+# 10 a 13  158 695
+# 14 a 17  668 767
+# Total    827 462
+
+ocu_asiste<-data.frame(wtd.table(ocupados$asis, weights = ocupados$fac_mti))
+# Asiste     442 632
+# No asiste  384 830
+# Total      827 462
+
+ocu_tam_hogar<-data.frame(wtd.table(ocupados$tam_hog, weights = ocupados$fac_mti))
+# 1 a 3 integrantes     80 799
+# 4 a 5 integrantes    194 033
+# 6 a 7 integrantes     87 316
+# 8 y maás integrantes  44 020
+# Total                406 168
+
+ocu_sex_jefe<-data.frame(wtd.table(ocupados$sex_jefe, weights = ocupados$fac_mti))
+# Hombres  327 237
+# Mujeres   78 931
+# Total    406 168

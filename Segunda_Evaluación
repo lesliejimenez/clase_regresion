@@ -1,0 +1,47 @@
+
+
+rural <- data.frame(read.spss("C://Users//SALA-C32//Desktop//solorural.sav"))
+
+ocupados<-subset(rural,rural$c_ocu=="ocupado")
+
+ocupados$t_per<-ifelse(ocupados$t_per=="1","Familiar",
+                     ifelse(ocupados$t_per=="2","No familiar",
+                            ifelse(ocupados$t_per=="3","Cuenta propia", "NA")))
+ocu_tper<-data.frame(wtd.table(ocupados$t_per, weights = ocupados$fac_mti))
+
+ocupados$eda<-ifelse(ocupados$eda>=5 & ocupados$eda<=9,"5 a 9",
+                     ifelse(ocupados$eda>=10 & ocupados$eda<=13,"10 a 13",
+                            ifelse(ocupados$eda>=14 & ocupados$eda<=17,"14 a 17", "NA")))
+ocu_grupoedad<-data.frame(wtd.table(ocupados$eda, weights = ocupados$fac_mti))
+
+ocupados$escol_jefe<-ifelse(ocupados$escol_jefe==1,"Sin instrucción",
+                            ifelse(ocupados$escol_jefe==2,"Pimaria incompleta",
+                                   ifelse(ocupados$escol_jefe==3,"Primaria completa",
+                                          ifelse(ocupados$escol_jefe==4,"Secundaria incompleta",
+                                                 ifelse(ocupados$escol_jefe==5,"Secundaria completa",
+                                                        ifelse(ocupados$escol_jefe==6,"Preparatoria y más", "NA"))))))
+ocu_escol_jefe<-data.frame(wtd.table(ocupados$escol_jefe, weights = ocupados$fac_mti))
+
+ocu_tipo_apoyo<-data.frame(wtd.table(ocupados$t_apo1, weights = ocupados$fac_mti))
+
+ocu_ocujefe<-data.frame(wtd.table(ocupados$ocu_jefe, weights = ocupados$fac_mti))
+
+ocu_asiste<-data.frame(wtd.table(ocupados$asis, weights = ocupados$fac_mti))
+
+ocu_sex_jefe<-data.frame(wtd.table(ocupados$sex_jefe, weights = ocupados$fac_mti))
+
+ocu_sex<-data.frame(wtd.table(ocupados$sex,weights = ocupados$fac_mti))
+
+### Modelo de regresión logística
+
+modelo1<-multinom(ocu_tper ~ 1, data = ocupados)
+summary(modelo1)
+
+modelofin<-multinom(ocu_tper ~ ocu_sex + ocu_grupoedad + ocu_asiste + ocu_sex_jefe + ocu_escol_jefe + ocu_tipo_apoyo + ocu_ocujefe, data = ocupados)
+
+
+install.packages("stargazer")
+require(stargazer)
+
+s<-stargaxer(modelofin, type="html", title="Coeficientes", summary=T)
+stargazer(modelofin, type="text", title="Coeficientes", digits=2, out="summary&var")

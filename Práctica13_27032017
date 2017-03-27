@@ -1,0 +1,33 @@
+# Series de tiempo
+
+# 27 de marzo del 2017
+
+asalariados <- data.frame(read.csv("C://Users//Leslie Jiménez//Desktop//Series de tiempo//Asalariados.csv", header = T) [7,2:49])
+
+asalariadosts <- t(ts(asalariados,start = 2005,frequency = 4))
+
+asalariadosts <- as.numeric(asalariadosts)
+
+asalariadosts <- ts(asalariadosts)
+
+# Suavizado exponencial en R
+
+require(forecast)
+
+modelo1 <- ses(asalariadosts,alpha=0.1,initial="simple",h=8)
+modelo2 <- ses(asalariadosts,alpha=0.3,initial="simple",h=8)
+modelo3 <- ses(asalariadosts,alpha=0.95,initial="simple",h=8)
+
+x11()
+
+plot(modelo1,ylab="Asalariados",xlab="Años",main = "Asalariados",type = "o")
+
+lines(modelo1$fitted,col="brown",type = "o")
+lines(modelo2$fitted,col="red",type = "o")
+lines(modelo3$fitted,col="green",type = "o")
+
+lines(modelo1$mean,col="brown",type = "o")
+lines(modelo2$mean,col="red",type = "o")
+lines(modelo3$mean,col="green",type = "o")
+
+legend("topleft",lty = 1,col = c(1,"brown","red","green"),c("datos", expression(alpha==0.1),expression(alpha==0.3),expression(alpha==0.95)),pch=1)
